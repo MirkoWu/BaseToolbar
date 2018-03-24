@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 import com.mirkowu.basetoolbar.BaseToolbar;
 
+/**
+ * 代码创建BaseToolbar
+ */
 public class SampleActivity extends BaseToolbarActivity {
 
     public static void start(Context context) {

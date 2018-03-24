@@ -10,7 +10,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mirkowu.basetoolbar.BaseToolbar;
+import com.mirkowu.statusbarutil.StatusBarUtil;
 
+/**
+ * XML 中使用BaseToolBar
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private BaseToolbar mToolbar;
 
@@ -18,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StatusBarUtil.setImmersiveTransparentStatusBar(this);//沉浸式透明状态栏
+
         mToolbar = findViewById(R.id.mToolbar);
 
         //标题会根据左右中宽度最大那个为准 设置margin，保存标题居中。
@@ -30,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mToolbar.setSubTextColor(Color.GRAY);
 
         mToolbar.setBackgroundColor(getColorId(R.color.colorPrimary));//设置背景颜色
+
+        // mToolbar.setStatusBarTransparent();//设置透明的状态栏
+        mToolbar.setStatusBarColor(getColorId(R.color.colorAccent));//设置透明的状态栏
 
         findViewById(R.id.mBtnAddLeftImage).setOnClickListener(this);
         findViewById(R.id.mBtnAddLeftText).setOnClickListener(this);
@@ -92,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (showStatusBar) {
                     mToolbar.hideStatusBar();
                 } else {
+                    StatusBarUtil.setImmersiveTransparentStatusBar(this);
                     //mToolbar.setStatusBarTransparent();
                     mToolbar.setStatusBarColor(getColorId(R.color.colorAccent));
                 }
