@@ -1,5 +1,5 @@
 # Use
 
 ```
-    implementation 'com.mirkowu:BaseToolbar:0.0.2'
+    implementation 'com.mirkowu:BaseToolbar:0.0.3'
 ```
