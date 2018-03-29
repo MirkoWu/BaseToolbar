@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.mBtnShowHideDivider).setOnClickListener(this);
         findViewById(R.id.mBtnShowHideStatusBar).setOnClickListener(this);
         findViewById(R.id.mBtnWithBase).setOnClickListener(this);
-        findViewById(R.id.mBtnWithLightMode).setOnClickListener(this);
     }
 
 
@@ -111,12 +110,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.mBtnWithBase:
                 SampleActivity.start(this);
                 break;
-            case R.id.mBtnWithLightMode:
-                LightModeActivity.start(this);
-                break;
-
         }
-
 
     }
 
