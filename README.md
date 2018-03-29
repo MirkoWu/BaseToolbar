@@ -5,7 +5,7 @@
 ```
 
 ### First Way :in XML
-```
+```xml
    <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="match_parent"
@@ -19,7 +19,9 @@
             // ...这里写布局
              
     </LinearLayout>
-    
+```
+
+```java
     //代码设置
     mToolbar.setTitle("我是标题BaseToolbar");//设置标题
     mToolbar.setBackButton(R.mipmap.back);//这里简化设置返回键，点击调用onBackPress()
@@ -45,23 +47,21 @@
 ```
 ### Second Way : Code create
 
-```
+```java
     //可以代码创建,建议使用Builder创建
-  BaseToolbar toolbar=  new BaseToolbar.Builder()
-    .setTitle("我是标题BaseToolbar")
-    .setBackButton(R.mipmap.back)
-    .setBottomDivider(Color.GRAY, 1)
-    .setStatusBarColor(Color.TRANSPARENT)
-    .setTitleTextColor(Color.BLACK)
-    //......优雅的链式调用，快捷高效
-    .bulid();
-    
+    BaseToolbar toolbar=  new BaseToolbar.Builder()
+      .setTitle("我是标题BaseToolbar")
+      .setBackButton(R.mipmap.back)
+      .setBottomDivider(Color.GRAY, 1)
+      .setStatusBarColor(Color.TRANSPARENT)
+      .setTitleTextColor(Color.BLACK)
+      //......优雅的链式调用，快捷高效
+      .bulid();
+      
     //还可搭配BaseActivity使用，更方便，详情见demo
 ```
 ### 截图
-![Example1](image/title.jpg)
-![Example1](image/main.png)
-![Example1](image/light_mode.png)
+![Example1](image/title.jpg)![Example1](image/main.png)![Example1](image/light_mode.png)
 
 # proguard-rules
 ```
