@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.mirkowu.basetoolbar.BaseToolbar;
+import com.mirkowu.statusbarutil.StatusBarUtil;
 
 /**
  * 代码创建BaseToolbar
@@ -52,7 +53,8 @@ public class SampleActivity extends BaseToolbarActivity {
     @Override
     protected void initialize() {
         //也可用getToolbar()方法拿到BaseToolbar，进行相应操作
-//        getToolbar().setStatusBarTransparent();
+        StatusBarUtil.setImmersiveTransparentStatusBar(this);//设置沉浸式透明状态栏 配合使用
+        getToolbar().setStatusBarTransparent();
 //        getToolbar().hideStatusBar();
     }
 

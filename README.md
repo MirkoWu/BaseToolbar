@@ -1,7 +1,7 @@
 # Use
 
 ```
-    implementation 'com.mirkowu:BaseToolbar:0.0.3'
+    implementation 'com.mirkowu:BaseToolbar:0.0.4'
 ```
 
 ### First Way :in XML
@@ -59,7 +59,7 @@
     //还可搭配BaseActivity使用，更方便，详情见demo
 ```
 
-#proguard-rules
+# proguard-rules
 ```
     -keep class com.mirkowu.basetoolbar.** {*;}
 ```
