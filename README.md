@@ -61,9 +61,11 @@
     //还可搭配BaseActivity使用，更方便，详情见demo
 ```
 ### 截图
-![Example1](image/title.jpg) ![Example1](image/main.png) ![Example1](image/light_mode.png)
+![Example1](image/title.jpg){:height="500px" width="300px"}
+![Example1](image/main.png){:height="80px" width="300px"}
+![Example1](image/light_mode.png){:height="200px" width="300px"}
 
 # proguard-rules
-```
+```java
     -keep class com.mirkowu.basetoolbar.** {*;}
 ```
