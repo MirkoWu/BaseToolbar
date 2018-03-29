@@ -15,7 +15,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SampleActivity"></activity>
+        <activity android:name=".SampleActivity" />
+        <activity android:name=".LightModeActivity"></activity>
     </application>
 
 </manifest>

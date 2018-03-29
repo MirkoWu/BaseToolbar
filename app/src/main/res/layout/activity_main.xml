@@ -1,66 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+
     tools:context="com.mirkowu.basetoolbarsample.MainActivity">
 
-    <com.mirkowu.basetoolbar.BaseToolbar
-        android:id="@+id/mToolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/mBtnAddLeftImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加返回键" />
+        <com.mirkowu.basetoolbar.BaseToolbar
+            android:id="@+id/mToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/mBtnAddLeftText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加左文本菜单" />
+        <Button
+            android:id="@+id/mBtnAddLeftImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加返回键" />
 
-
-    <Button
-        android:id="@+id/mBtnAddRightText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加右文本菜单" />
-
-
-    <Button
-        android:id="@+id/mBtnAddRightImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加右图片菜单" />
-
-    <Button
-        android:id="@+id/mBtnAddRightView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加右布局" />
-
-    <Button
-        android:id="@+id/mBtnShowHideDivider"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="显示/隐藏 分割线" />
-
-    <Button
-        android:id="@+id/mBtnShowHideStatusBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="显示/隐藏 StatusBar" />
-
-  <Button
-        android:id="@+id/mBtnWithBase"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="配合BaseActivity使用" />
+        <Button
+            android:id="@+id/mBtnAddLeftText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加左文本菜单" />
 
 
-</LinearLayout>
+        <Button
+            android:id="@+id/mBtnAddRightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加右文本菜单" />
+
+
+        <Button
+            android:id="@+id/mBtnAddRightImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加右图片菜单" />
+
+        <Button
+            android:id="@+id/mBtnAddRightView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加右布局" />
+
+        <Button
+            android:id="@+id/mBtnShowHideDivider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="显示/隐藏 分割线" />
+
+        <Button
+            android:id="@+id/mBtnShowHideStatusBar"
+            android:layout_width="wrap_content"
+            android:textAllCaps="false"
+            android:layout_height="wrap_content"
+            android:text="显示/隐藏 StatusBar" />
+
+        <Button
+            android:id="@+id/mBtnWithBase"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="配合BaseActivity使用" />
+
+        <Button
+            android:id="@+id/mBtnWithLightMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="配合亮色模式Activity使用" />
+
+    </LinearLayout>
+
+</ScrollView>

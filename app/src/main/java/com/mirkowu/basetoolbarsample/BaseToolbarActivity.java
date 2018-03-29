@@ -37,7 +37,7 @@ public abstract class BaseToolbarActivity extends AppCompatActivity {
         BaseToolbar.Builder builder
                 = new BaseToolbar.Builder(this)
                 // .setStatusBarColor(Color.TRANSPARENT)//统一设置颜色
-                .setBackButton(R.mipmap.back)//统一设置返回键
+                .setBackButton(R.mipmap.back_white)//统一设置返回键
                 .setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
                 .setTitleTextColor(ContextCompat.getColor(this, R.color.white));
 

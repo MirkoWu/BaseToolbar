@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         StatusBarUtil.setImmersiveTransparentStatusBar(this);//沉浸式透明状态栏
 
         mToolbar = findViewById(R.id.mToolbar);
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.mBtnShowHideDivider).setOnClickListener(this);
         findViewById(R.id.mBtnShowHideStatusBar).setOnClickListener(this);
         findViewById(R.id.mBtnWithBase).setOnClickListener(this);
+        findViewById(R.id.mBtnWithLightMode).setOnClickListener(this);
     }
 
 
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = v.getId();
         switch (id) {
             case R.id.mBtnAddLeftImage://设置返回按钮，如有需要可在onBackPressed()处拦截
-                mToolbar.setBackButton(R.mipmap.back);
+                mToolbar.setBackButton(R.mipmap.back_white);
                 break;
             case R.id.mBtnAddLeftText:
                 mToolbar.addLeftText("左菜单", getColorId(R.color.colorPrimary),
@@ -108,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.mBtnWithBase:
                 SampleActivity.start(this);
+                break;
+            case R.id.mBtnWithLightMode:
+                LightModeActivity.start(this);
                 break;
 
         }

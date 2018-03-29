@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".LightModeActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="以下为当API>=19, 即Android 版本大于等于4.4，且不支持 亮色模式时的处理方法。\n低于4.4的版本 状态栏会是黑的，我们不处理。\n setStatusBarLightMode()方法 的默认不做处理，会出现部分机型，StatusBar会有黑色渐变的效果。可根据项目需求,自行处理。" />
+
+    <Button
+        android:id="@+id/mBtnNone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当状态栏不支持亮色模式时，默认不做处理" />
+
+    <Button
+        android:id="@+id/mBtnUseSystem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当状态栏不支持亮色模式时，使用系统的StatusBar" />
+
+    <Button
+        android:id="@+id/mBtnUseColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当状态栏不支持亮色模式时，使用纯色" />
+
+    <Button
+        android:id="@+id/mBtnUseColorWithAlpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当状态栏不支持亮色模式时，使用带透明度的颜色" />
+
+</LinearLayout>
