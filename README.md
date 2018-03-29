@@ -4,6 +4,9 @@
     implementation 'com.mirkowu:BaseToolbar:0.0.4'
 ```
 
+[博客文档](https://juejin.im/post/5abcfe1f6fb9a028c523459d)
+
+
 ### First Way :in XML
 ```xml
    <LinearLayout
