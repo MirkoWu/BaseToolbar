@@ -75,7 +75,7 @@
 
 ### 截图
 ![](image/title.jpg)     
-![](image/main.png)                 
+![](image/main_method.png)                 
 
 # proguard-rules
 ```java
