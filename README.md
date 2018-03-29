@@ -61,7 +61,7 @@
     //还可搭配BaseActivity使用，更方便，详情见demo
 ```
 ### 截图
-![Example1](image/title.jpg)![Example1](image/main.png)![Example1](image/light_mode.png)
+![Example1](image/title.jpg) ![Example1](image/main.png) ![Example1](image/light_mode.png)
 
 # proguard-rules
 ```
