@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.IntDef;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
@@ -30,15 +33,29 @@ import java.util.ArrayList;
 
 public class BaseToolbar extends Toolbar {
     private final String TAG = BaseToolbar.class.getSimpleName();
+
+    @IntDef({CENTER, LEFT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TitleGravity {
+    }
+
+    /*** 完全居中 保持TitleView和左右屏幕边距离相等，文字居中 */
+    public static final int CENTER = 0;
+    /*** 填充剩余空间 默认居左*/
+    public static final int LEFT = 1;
+
+
+    private int mTitleMode;//标题显示模式
     private Context mContext;
     private View mStatusBar;//状态栏
-    private ImageView mIvBack;//返回按钮
+    private View mBackView;//返回按钮
     private View mBottomDivider;//状态栏底部分割线
     private LinearLayout mRootView;//根部局
     private TextView mTitleTextView;//标题
     private FrameLayout mLayoutCenter;//中心布局
     private LinearLayout mLayoutLeft, mLayoutRight;//左右布局
     private int mSubTextColorId = Color.BLACK;//副标题文本颜色
+    private float mSubTextSize = 16;//副标题文本字体大小 sp
 
 
     public BaseToolbar(Context context) {
@@ -146,14 +163,14 @@ public class BaseToolbar extends Toolbar {
 
 
     /**
-     * 设置返回按钮
+     * 设置返回按钮 限制只能添加一个BackButton
      */
     public void setBackButton(@DrawableRes int resId) {
-        if (resId <= 0) {
+        if (resId == 0) {
             return;
         }
-
-        mIvBack = createImageMenu(mContext, resId, new OnClickListener() {
+        if (mBackView != null) removeLeftView(mBackView);
+        mBackView = createImageMenu(mContext, resId, new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (getContext() instanceof Activity)
@@ -161,27 +178,58 @@ public class BaseToolbar extends Toolbar {
             }
         });
         int padding = DisplayUtil.dip2px(mContext, 12);
-        mIvBack.setPadding(padding / 3, 0, padding, 0);
-        addLeftView(mIvBack);
+        mBackView.setPadding(padding / 3, 0, padding, 0);
+
+
+        addLeftView(mBackView);
     }
+
+    /**
+     * 带有 图标和 文字 二种可选的 返回按钮 文字 颜色 大小 默认为
+     *
+     * @param resId
+     * @param text
+     */
+    public void setBackButton(@DrawableRes int resId, CharSequence text) {
+        setBackButton(resId, text, mSubTextColorId, mSubTextSize);
+    }
+
+    /**
+     * 带有 图标和 文字 二种可选的 返回按钮
+     *
+     * @param resId
+     * @param text
+     * @param textColorId
+     * @param textSize
+     */
+    public void setBackButton(@DrawableRes int resId, CharSequence text, int textColorId, float textSize) {
+        if (resId == 0) {
+            return;
+        }
+
+        if (mBackView != null) removeLeftView(mBackView);//限制只能添加一个BackButton
+        mBackView = createBackLayout(mContext, resId, text, textColorId, textSize, new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getContext() instanceof Activity)
+                    ((Activity) getContext()).onBackPressed();//调用activity的返回键
+            }
+        });
+
+        int padding = DisplayUtil.dip2px(mContext, 10);
+        mBackView.setPadding(0, 0, padding, 0);
+
+        addLeftView(mBackView);
+    }
+
 
     /**
      * 隐藏返回按钮
      */
     public void hideBackButton() {
-        if (mIvBack != null) {
-            mIvBack.setVisibility(GONE);
+        if (mBackView != null) {
+            mBackView.setVisibility(GONE);
         }
-    }
-
-
-    /**
-     * 设置副标题文本颜色 要在添加副标题前调用，否则不起作用
-     *
-     * @param subTextColorId
-     */
-    public void setSubTextColor(@ColorInt int subTextColorId) {
-        this.mSubTextColorId = subTextColorId;
     }
 
 
@@ -207,6 +255,23 @@ public class BaseToolbar extends Toolbar {
     }
 
     /**
+     * 移除左边View
+     *
+     * @param view
+     */
+    public void removeLeftView(View view) {
+        mLayoutLeft.removeView(view);
+    }
+
+    public void removeLeftView(int index) {
+        mLayoutLeft.removeViewAt(index);
+    }
+
+    public void removeAllLeftView() {
+        mLayoutLeft.removeAllViews();
+    }
+
+    /**
      * 显示左边图形菜单按钮
      */
     public void addLeftImage(@DrawableRes int resId, OnClickListener listener) {
@@ -220,12 +285,12 @@ public class BaseToolbar extends Toolbar {
      * 显示左边文本菜单按钮
      */
     public void addLeftText(CharSequence text, OnClickListener listener) {
-        TextView textMenu = createTextMenu(mContext, text, mSubTextColorId, listener);
+        TextView textMenu = createTextMenu(mContext, text, mSubTextColorId, mSubTextSize, listener);
         addLeftView(textMenu);
     }
 
-    public void addLeftText(CharSequence text, @ColorInt int colorId, OnClickListener listener) {
-        TextView textMenu = createTextMenu(mContext, text, colorId, listener);
+    public void addLeftText(CharSequence text, @ColorInt int colorId, float textSize, OnClickListener listener) {
+        TextView textMenu = createTextMenu(mContext, text, colorId, textSize, listener);
         addLeftView(textMenu);
     }
 
@@ -233,8 +298,8 @@ public class BaseToolbar extends Toolbar {
         addLeftText(getContext().getText(resId), listener);
     }
 
-    public void addLeftText(@StringRes int resId, @ColorInt int colorId, OnClickListener listener) {
-        addLeftText(getContext().getText(resId), colorId, listener);
+    public void addLeftText(@StringRes int resId, @ColorInt int colorId, int textSize, OnClickListener listener) {
+        addLeftText(getContext().getText(resId), colorId, textSize, listener);
     }
 
 
@@ -259,6 +324,22 @@ public class BaseToolbar extends Toolbar {
         mLayoutRight.addView(view, index, params);
     }
 
+    /**
+     * 移除右边View
+     *
+     * @param view
+     */
+    public void removeRightView(View view) {
+        mLayoutRight.removeView(view);
+    }
+
+    public void removeRightView(int index) {
+        mLayoutRight.removeViewAt(index);
+    }
+
+    public void removeAllRightView() {
+        mLayoutRight.removeAllViews();
+    }
 
     /**
      * 显示右边文本菜单按钮
@@ -266,13 +347,13 @@ public class BaseToolbar extends Toolbar {
      * @param text
      * @param listener
      */
-    public void addRightText(CharSequence text, @ColorInt int colorId, OnClickListener listener) {
-        TextView textMenu = createTextMenu(mContext, text, colorId, listener);
+    public void addRightText(CharSequence text, @ColorInt int colorId, float textSize, OnClickListener listener) {
+        TextView textMenu = createTextMenu(mContext, text, colorId, textSize, listener);
         addRightView(textMenu);
     }
 
     public void addRightText(CharSequence text, OnClickListener listener) {
-        TextView textMenu = createTextMenu(mContext, text, mSubTextColorId, listener);
+        TextView textMenu = createTextMenu(mContext, text, mSubTextColorId, mSubTextSize, listener);
         addRightView(textMenu);
     }
 
@@ -280,8 +361,8 @@ public class BaseToolbar extends Toolbar {
         addRightText(getContext().getText(text), listener);
     }
 
-    public void addRightText(@StringRes int text, @ColorInt int colorId, OnClickListener listener) {
-        addRightText(getContext().getText(text), colorId, listener);
+    public void addRightText(@StringRes int text, @ColorInt int colorId, float textSize, OnClickListener listener) {
+        addRightText(getContext().getText(text), colorId, textSize, listener);
     }
 
 
@@ -317,11 +398,33 @@ public class BaseToolbar extends Toolbar {
         mLayoutCenter.addView(view, index, params);
     }
 
+    /**
+     * 移除中间View
+     *
+     * @param view
+     */
+    public void removeCenterView(View view) {
+        mLayoutCenter.removeView(view);
+    }
+
+    public void removeCenterView(int index) {
+        mLayoutCenter.removeViewAt(index);
+    }
+
+    public void removeAllCenterView() {
+        mLayoutCenter.removeAllViews();
+    }
+
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        keepTitleViewCenterForParent();
+        if (mTitleMode == CENTER) {
+            keepTitleViewCenterForParent();
+        } else {
+            keepTitleViewAlignLeft();
+        }
     }
+
 
     /**
      * 保持TitleView和左右屏幕边距离相等，文字居中
@@ -334,10 +437,29 @@ public class BaseToolbar extends Toolbar {
         } else {
             mTitleTextView.setVisibility(VISIBLE);
         }
+
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTitleTextView.getLayoutParams();
         if (margin == params.leftMargin && margin == params.rightMargin) return;//相等就不再设置，避免死循环
+
+        params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.leftMargin = margin;
         params.rightMargin = margin;
+
+        mTitleTextView.setLayoutParams(params);
+        mTitleTextView.setGravity(Gravity.CENTER);
+    }
+
+    /**
+     * 保持Title居左
+     */
+    private void keepTitleViewAlignLeft() {
+        mTitleTextView.setVisibility(VISIBLE);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        params.addRule(RelativeLayout.RIGHT_OF, R.id.mLayoutLeft);
+        params.addRule(RelativeLayout.LEFT_OF, R.id.mLayoutRight);
+        mTitleTextView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         mTitleTextView.setLayoutParams(params);
     }
 
@@ -355,6 +477,27 @@ public class BaseToolbar extends Toolbar {
     @Override
     public void setTitle(@StringRes int resId) {
         setTitle(getContext().getText(resId));
+    }
+
+
+    /**
+     * 设置标题显示模式 居中还是靠左 {@link TitleGravity}
+     *
+     * @param titleMode
+     */
+    public void setTitleMode(@TitleGravity int titleMode) {
+        mTitleMode = titleMode;
+        requestLayout();
+    }
+
+
+    /**
+     * 获取当前标题显示模式 {@link TitleGravity}
+     *
+     * @return
+     */
+    public int getTitleMode() {
+        return mTitleMode;
     }
 
     /**
@@ -375,6 +518,88 @@ public class BaseToolbar extends Toolbar {
     @Override
     public void setTitleTextColor(@ColorInt int colorId) {
         mTitleTextView.setTextColor(colorId);
+    }
+
+    /**
+     * 设置标题字体大小
+     *
+     * @param textSize
+     */
+    public void setTitleTextSize(float textSize) {
+        mTitleTextView.setTextSize(textSize);
+    }
+
+    /**
+     * 设置标题 加粗
+     *
+     * @param bold
+     */
+    public void setTitleBoldText(boolean bold) {
+        mTitleTextView.getPaint().setFakeBoldText(bold);
+    }
+
+    /**
+     * 设置全局副标题 文本颜色
+     * <p>
+     * 优先级 setSubTextColor < addLeftText(TextView)/addRightText(TextView)
+     *
+     * @param subTextColorId
+     */
+    public void setSubTextColor(@ColorInt int subTextColorId) {
+        this.mSubTextColorId = subTextColorId;
+        setChildTextColor(mLayoutLeft);
+        setChildTextColor(mLayoutRight);
+        setChildTextColor(mLayoutCenter);
+    }
+
+    /**
+     * 设置全局副标题文本 字体大小
+     * <p>
+     * 优先级setSubTextColor < addLeftText(TextView)/addRightText(TextView)
+     *
+     * @param subTextSize
+     */
+    public void setSubTextSize(float subTextSize) {
+        this.mSubTextSize = subTextSize;
+        setChildTextSize(mLayoutLeft);
+        setChildTextSize(mLayoutRight);
+        setChildTextSize(mLayoutCenter);
+    }
+
+    /**
+     * 遍历设置字体大小
+     *
+     * @param view
+     */
+    private void setChildTextSize(View view) {
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            int count = viewGroup.getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = viewGroup.getChildAt(i);
+                setChildTextSize(child);
+            }
+        } else if (view instanceof TextView) {
+            ((TextView) view).setTextSize(mSubTextSize);
+        }
+    }
+
+    /**
+     * 遍历设置字体颜色
+     *
+     * @param view
+     */
+    private void setChildTextColor(View view) {
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            int count = viewGroup.getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = viewGroup.getChildAt(i);
+                setChildTextSize(child);
+            }
+        } else if (view instanceof TextView) {
+            ((TextView) view).setTextSize(mSubTextColorId);
+        }
     }
 
 
@@ -439,6 +664,7 @@ public class BaseToolbar extends Toolbar {
                 backgroundColorId = Color.BLUE,
                 titleColorId = Color.BLACK,//均设置默认值
                 subTextColorId = Color.BLACK;//均设置默认值
+        private float titleTextSize = 18, subTextSize = 16;
         private int bottomDividerHeight = 0;
         private ArrayList<View> leftViewList, rightViewList;
 
@@ -458,83 +684,103 @@ public class BaseToolbar extends Toolbar {
         }
 
         /**
-         * leftImage
+         * leftImage ScaleType默认为 ScaleType.CENTER
          *
          * @param imgResId
          * @param listener
          * @return
          */
         public Builder addLeftImage(@DrawableRes int imgResId, OnClickListener listener) {
-            if (leftViewList == null) leftViewList = new ArrayList<>();
-            leftViewList.add(createImageMenu(mContext, imgResId, listener));
-            return this;
+            return addLeftImage(imgResId, ImageView.ScaleType.CENTER, listener);
         }
 
-        public Builder addRightImage(@DrawableRes int imgResId, OnClickListener listener) {
-            if (rightViewList == null) rightViewList = new ArrayList<>();
-            rightViewList.add(createImageMenu(mContext, imgResId, listener));
+        public Builder addLeftImage(@DrawableRes int imgResId, ImageView.ScaleType scaleType, OnClickListener listener) {
+            if (leftViewList == null) leftViewList = new ArrayList<>();
+            leftViewList.add(createImageMenu(mContext, imgResId, scaleType, listener));
             return this;
         }
 
         /**
-         * leftText
+         * addRightImage ScaleType默认为 ScaleType.CENTER
+         *
+         * @param imgResId
+         * @param listener
+         * @return
+         */
+        public Builder addRightImage(@DrawableRes int imgResId, OnClickListener listener) {
+            return addRightImage(imgResId, ImageView.ScaleType.CENTER, listener);
+        }
+
+        public Builder addRightImage(@DrawableRes int imgResId, ImageView.ScaleType scaleType, OnClickListener listener) {
+            if (rightViewList == null) rightViewList = new ArrayList<>();
+            rightViewList.add(createImageMenu(mContext, imgResId, scaleType, listener));
+            return this;
+        }
+
+        /**
+         * leftText 默认subTextColor Color.BLACK textSize 16sp
          *
          * @param text
          * @param listener
          * @return
          */
         public Builder addLeftText(CharSequence text, OnClickListener listener) {
-            if (leftViewList == null) leftViewList = new ArrayList<>();
-            leftViewList.add(createTextMenu(mContext, text, subTextColorId, listener));
-            return this;
-        }
-
-        public Builder addLeftText(CharSequence text, @ColorInt int textColorId, OnClickListener listener) {
-            if (leftViewList == null) leftViewList = new ArrayList<>();
-            leftViewList.add(createTextMenu(mContext, text, textColorId, listener));
-            return this;
+            return addLeftText(text, subTextColorId, subTextSize, listener);
         }
 
 
+        public Builder addLeftText(CharSequence text, @ColorInt int textColorId, float textSize, OnClickListener listener) {
+            if (leftViewList == null) leftViewList = new ArrayList<>();
+            leftViewList.add(createTextMenu(mContext, text, textColorId, textSize, listener));
+            return this;
+        }
+
+        /**
+         * leftText 默认subTextColor Color.BLACK textSize 16sp
+         *
+         * @param textResId
+         * @param listener
+         * @return
+         */
         public Builder addLeftText(@StringRes int textResId, OnClickListener listener) {
-            addLeftText(mContext.getString(textResId), subTextColorId, listener);
-            return this;
+            return addLeftText(mContext.getString(textResId), subTextColorId, subTextSize, listener);
         }
 
-        public Builder addLeftText(@StringRes int textResId, @ColorInt int textColorId, OnClickListener listener) {
-            addLeftText(mContext.getString(textResId), textColorId, listener);
-            return this;
+        public Builder addLeftText(@StringRes int textResId, @ColorInt int textColorId, float textSize, OnClickListener listener) {
+            return addLeftText(mContext.getString(textResId), textColorId, textSize, listener);
         }
 
 
         /**
-         * rightText
+         * rightText 默认subTextColor Color.BLACK textSize 16sp
          *
          * @param text
          * @param listener
          * @return
          */
         public Builder addRightText(CharSequence text, OnClickListener listener) {
+            return addRightText(text, subTextColorId, subTextSize, listener);
+        }
+
+        public Builder addRightText(CharSequence text, @ColorInt int textColorId, float textSize, OnClickListener listener) {
             if (rightViewList == null) rightViewList = new ArrayList<>();
-            rightViewList.add(createTextMenu(mContext, text, subTextColorId, listener));
+            rightViewList.add(createTextMenu(mContext, text, textColorId, textSize, listener));
             return this;
         }
 
-        public Builder addRightText(CharSequence text, @ColorInt int textColorId, OnClickListener listener) {
-            if (rightViewList == null) rightViewList = new ArrayList<>();
-            rightViewList.add(createTextMenu(mContext, text, textColorId, listener));
-            return this;
-        }
-
-
+        /**
+         * rightText 默认subTextColor Color.BLACK textSize 16sp
+         *
+         * @param textResId
+         * @param listener
+         * @return
+         */
         public Builder addRightText(@StringRes int textResId, OnClickListener listener) {
-            addRightText(mContext.getString(textResId), listener);
-            return this;
+            return addRightText(mContext.getString(textResId), listener);
         }
 
-        public Builder addRightText(@StringRes int textResId, @ColorInt int textColorId, OnClickListener listener) {
-            addRightText(mContext.getString(textResId), textColorId, listener);
-            return this;
+        public Builder addRightText(@StringRes int textResId, @ColorInt int textColorId, float textSize, OnClickListener listener) {
+            return addRightText(mContext.getString(textResId), textColorId, textSize, listener);
         }
 
         /**
@@ -576,6 +822,11 @@ public class BaseToolbar extends Toolbar {
             return this;
         }
 
+        public Builder setTitleTextSize(float titleTextSize) {
+            this.titleTextSize = titleTextSize;
+            return this;
+        }
+
         /**
          * 设置副标题文本颜色
          * 要在 添加副标题前调用，否则不起作用
@@ -585,6 +836,11 @@ public class BaseToolbar extends Toolbar {
          */
         public Builder setSubTextColor(@ColorInt int subTextColorId) {
             this.subTextColorId = subTextColorId;
+            return this;
+        }
+
+        public Builder setSubTextSize(float subTextSize) {
+            this.subTextSize = subTextSize;
             return this;
         }
 
@@ -610,6 +866,13 @@ public class BaseToolbar extends Toolbar {
                 else toolbar.setTitle(null);
             } else toolbar.setTitle(titleText);
 
+            toolbar.setTitleTextColor(titleColorId);
+            toolbar.setTitleTextSize(titleTextSize);
+
+            /*** Menu Text color textSize*/
+            toolbar.setSubTextColor(subTextColorId);
+            toolbar.setSubTextSize(subTextSize);
+
             /*** leftMenu */
             if (leftViewList != null && !leftViewList.isEmpty()) {
                 for (View view : leftViewList) {
@@ -631,10 +894,6 @@ public class BaseToolbar extends Toolbar {
 
             toolbar.setBackgroundColor(backgroundColorId);
 
-            toolbar.setTitleTextColor(titleColorId);
-
-            toolbar.setSubTextColor(subTextColorId);
-
             return toolbar;
         }
     }
@@ -644,10 +903,10 @@ public class BaseToolbar extends Toolbar {
         return createTextMenu(context, text, textColorId, 16, listener);
     }
 
-    public static TextView createTextMenu(Context context, CharSequence text, @ColorInt int textColorId, float textSize_SP, OnClickListener listener) {
+    public static TextView createTextMenu(Context context, CharSequence text, @ColorInt int textColorId, float textSize, OnClickListener listener) {
         TextView textMenu = new TextView(context);
         textMenu.setTextColor(textColorId);
-        textMenu.setTextSize(textSize_SP);
+        textMenu.setTextSize(textSize);
         textMenu.setGravity(Gravity.CENTER);
         int padding = DisplayUtil.dip2px(context, 5);
         textMenu.setPadding(padding, 0, padding, 0);
@@ -655,20 +914,48 @@ public class BaseToolbar extends Toolbar {
         params.gravity = Gravity.CENTER;
         textMenu.setLayoutParams(params);
         textMenu.setText(text);
-        textMenu.setOnClickListener(listener);
+        if (listener != null) textMenu.setOnClickListener(listener);
         return textMenu;
     }
 
     public static ImageView createImageMenu(Context context, @DrawableRes int imageResId, OnClickListener listener) {
+        return createImageMenu(context, imageResId, ImageView.ScaleType.CENTER, listener);
+    }
+
+    public static ImageView createImageMenu(Context context, @DrawableRes int imageResId, ImageView.ScaleType scaleType, OnClickListener listener) {
         ImageView imageMenu = new ImageView(context);
         int padding = DisplayUtil.dip2px(context, 5);
         imageMenu.setPadding(padding, 0, padding, 0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
-        imageMenu.setScaleType(ImageView.ScaleType.CENTER);
+        imageMenu.setScaleType(scaleType);
         imageMenu.setLayoutParams(params);
         imageMenu.setImageResource(imageResId);
-        imageMenu.setOnClickListener(listener);
+        if (listener != null) imageMenu.setOnClickListener(listener);
         return imageMenu;
     }
+
+    public static LinearLayout createBackLayout(Context context, @DrawableRes int imageResId, CharSequence text, @ColorInt int textColorId, float textSize_SP, OnClickListener listener) {
+        LinearLayout backLayout = new LinearLayout(context);
+        if (imageResId != 0) {
+            ImageView iv = createImageMenu(context, imageResId, ImageView.ScaleType.CENTER_INSIDE, null);
+
+            iv.setPadding(0, 0, 0, 0);
+            backLayout.addView(iv);
+        }
+        if (!TextUtils.isEmpty(text)) {
+            TextView tv = createTextMenu(context, text, textColorId, textSize_SP, null);
+            tv.setPadding(0, 0, 0, 0);
+            backLayout.addView(tv);
+        }
+
+        int padding = DisplayUtil.dip2px(context, 5);
+        backLayout.setPadding(padding, 0, padding, 0);
+        backLayout.setGravity(Gravity.CENTER);
+        backLayout.setOnClickListener(listener);
+
+        return backLayout;
+    }
+
+
 }

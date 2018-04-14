@@ -20,9 +20,14 @@
             android:id="@+id/mBtnAddLeftImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="添加返回键" />
+            android:text="添加返回键/带文字" />
 
         <Button
+            android:id="@+id/mBtnSwitchTitleMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="标题居中/靠左侧" />
+ <Button
             android:id="@+id/mBtnAddLeftText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
