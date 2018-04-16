@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //标题会根据左右中宽度最大那个为准 设置margin，保存标题居中。
         // 如果超过屏幕一半，则无法显示标题，注意使用。
         mToolbar.setTitle("我是标题");
-        mToolbar.setTitleTextColor(Color.BLACK);
-        mToolbar.setBottomDivider(getColorId(R.color.colorAccent), 5);//此处高度单位为px
+        mToolbar.setTitleTextColor(Color.WHITE);
+        mToolbar.setBottomDivider(getColorId(R.color.gray), 16);//此处高度单位为px
         mToolbar.setTitleMode(BaseToolbar.CENTER);
         //统一设置副文本的颜色 添加文本时不设置是默认都是这个颜色，需定制时，可调用带文本的颜色的方法
         mToolbar.setSubTextColor(Color.GRAY);
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         findViewById(R.id.mBtnShowHideStatusBar).setOnClickListener(this);
         findViewById(R.id.mBtnWithBase).setOnClickListener(this);
+
+
     }
 
 
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (v.isSelected()) {
                     mToolbar.setBackButton(R.mipmap.back_white);
                 } else {
-                    mToolbar.setBackButton(R.mipmap.back_white, "返回", Color.WHITE,16);
+                    mToolbar.setBackButton(R.mipmap.back_white, "返回", Color.WHITE, 16);
                 }
                 v.setSelected(!v.isSelected());
                 break;
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mToolbar.setTitleMode(1 - mToolbar.getTitleMode());
                 break;
             case R.id.mBtnAddLeftText:
-                mToolbar.addLeftText("左菜单", Color.WHITE,16,
+                mToolbar.addLeftText("左菜单", Color.WHITE, 16,
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (showDivider) {
                     mToolbar.hideBottomDivider();
                 } else {
-                    mToolbar.setBottomDivider(getColorId(R.color.colorAccent), 5);
+                    mToolbar.setBottomDivider(getColorId(R.color.gray), 16);
                 }
                 break;
             case R.id.mBtnShowHideStatusBar://显示隐藏statusBar 配合StatusBarUtil使用效果更佳

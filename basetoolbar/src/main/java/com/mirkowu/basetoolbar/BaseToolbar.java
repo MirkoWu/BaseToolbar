@@ -659,12 +659,13 @@ public class BaseToolbar extends Toolbar {
         private CharSequence titleText;
         private int titleTextResId;
         private int backResId;
-        private int statusBarColorId = -1,
+        private int statusBarColorId,
                 bottomDividerColorId = Color.BLACK,
                 backgroundColorId = Color.BLUE,
                 titleColorId = Color.BLACK,//均设置默认值
                 subTextColorId = Color.BLACK;//均设置默认值
         private float titleTextSize = 18, subTextSize = 16;
+        private boolean showStatusBar = false;//是否显示StatusBar
         private int bottomDividerHeight = 0;
         private ArrayList<View> leftViewList, rightViewList;
 
@@ -828,7 +829,7 @@ public class BaseToolbar extends Toolbar {
         }
 
         /**
-         * 设置副标题文本颜色
+         * 设置所有副标题文本颜色
          * 要在 添加副标题前调用，否则不起作用
          *
          * @param subTextColorId
@@ -851,6 +852,7 @@ public class BaseToolbar extends Toolbar {
 
         public Builder setStatusBarColor(@ColorInt int statusBarColorId) {
             this.statusBarColorId = statusBarColorId;
+            this.showStatusBar = true;
             return this;
         }
 
@@ -890,7 +892,7 @@ public class BaseToolbar extends Toolbar {
             if (bottomDividerHeight > 0)
                 toolbar.setBottomDivider(bottomDividerColorId, bottomDividerHeight);
 
-            if (statusBarColorId > -1) toolbar.setStatusBarColor(statusBarColorId);
+            if (showStatusBar) toolbar.setStatusBarColor(statusBarColorId);
 
             toolbar.setBackgroundColor(backgroundColorId);
 
@@ -899,10 +901,16 @@ public class BaseToolbar extends Toolbar {
     }
 
 
-    public static TextView createTextMenu(Context context, CharSequence text, @ColorInt int textColorId, OnClickListener listener) {
-        return createTextMenu(context, text, textColorId, 16, listener);
-    }
-
+    /**
+     * 创建文字菜单
+     *
+     * @param context
+     * @param text
+     * @param textColorId
+     * @param textSize
+     * @param listener
+     * @return
+     */
     public static TextView createTextMenu(Context context, CharSequence text, @ColorInt int textColorId, float textSize, OnClickListener listener) {
         TextView textMenu = new TextView(context);
         textMenu.setTextColor(textColorId);
@@ -922,6 +930,15 @@ public class BaseToolbar extends Toolbar {
         return createImageMenu(context, imageResId, ImageView.ScaleType.CENTER, listener);
     }
 
+    /**
+     * 创建图片菜单
+     *
+     * @param context
+     * @param imageResId
+     * @param scaleType
+     * @param listener
+     * @return
+     */
     public static ImageView createImageMenu(Context context, @DrawableRes int imageResId, ImageView.ScaleType scaleType, OnClickListener listener) {
         ImageView imageMenu = new ImageView(context);
         int padding = DisplayUtil.dip2px(context, 5);
@@ -935,6 +952,17 @@ public class BaseToolbar extends Toolbar {
         return imageMenu;
     }
 
+    /**
+     * 创建 带文字 和图案 的返回键
+     *
+     * @param context
+     * @param imageResId
+     * @param text
+     * @param textColorId
+     * @param textSize_SP
+     * @param listener
+     * @return
+     */
     public static LinearLayout createBackLayout(Context context, @DrawableRes int imageResId, CharSequence text, @ColorInt int textColorId, float textSize_SP, OnClickListener listener) {
         LinearLayout backLayout = new LinearLayout(context);
         if (imageResId != 0) {
