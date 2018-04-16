@@ -1,7 +1,7 @@
 # Use
 
 ```
-    implementation 'com.mirkowu:BaseToolbar:0.0.4'
+    implementation 'com.mirkowu:BaseToolbar:0.0.5'
 ```
 
 [博客文档](https://juejin.im/post/5abcfe1f6fb9a028c523459d)
@@ -27,8 +27,10 @@
 ```java
     //代码设置
     mToolbar.setTitle("我是标题BaseToolbar");//设置标题
-    mToolbar.setBackButton(R.mipmap.back);//这里简化设置返回键，点击调用onBackPress() 
-    mToolbar.hideBackButton();//需要的时候还可以隐藏 
+    mToolbar.setTitleMode(BaseToolbar.CENTER/BaseToolbar.LEFT);//设置标题模式，完全居中/居左
+    mToolbar.setBackButton(R.mipmap.back);//这里简化设置返回键，点击调用onBackPress()
+    mToolbar.setBackButton(R.mipmap.back,"返回");//支持图片 和 文字一起显示
+    mToolbar.hideBackButton();//需要的时候还可以隐藏
     mToolbar.setBottomDivider(Color.GRAY, 1);//设置底部分割线，此处高度单位为px
     mToolbar.hideBottomDivider();//需要的时候还可以隐藏 
     mToolbar.setStatusBarColor(Color.TRANSPARENT);//需要的话可以设置状态栏颜色，原理为增加一个状态栏高度的View
