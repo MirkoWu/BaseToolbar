@@ -29,9 +29,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
-            android:gravity="left|center_vertical"
+            android:gravity="left"
             android:orientation="horizontal"
-            android:paddingLeft="5dp">
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
         </LinearLayout>
 
@@ -40,9 +41,10 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:gravity="right|center_vertical"
+            android:gravity="right"
             android:orientation="horizontal"
-            android:paddingRight="5dp">
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp">
 
         </LinearLayout>
 
@@ -51,13 +53,14 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:ellipsize="end"
+            android:ellipsize="none"
             android:gravity="center"
             android:minWidth="50dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:singleLine="true"
             android:textColor="#212121"
-            android:textSize="18sp"
-            />
+            android:textSize="18sp" />
     </RelativeLayout>
 
     <View

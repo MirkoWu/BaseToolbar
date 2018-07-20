@@ -34,18 +34,33 @@ import java.util.ArrayList;
 public class BaseToolbar extends Toolbar {
     private final String TAG = BaseToolbar.class.getSimpleName();
 
-    @IntDef({CENTER, LEFT})
+//    /**
+//     * @hide
+//     */
+//    @IntDef({TITLE_CENTER, TITLE_LEFT})
+//    @Retention(RetentionPolicy.SOURCE)
+//    public @interface TitleGravity {
+//    }
+
+    /**
+     * @hide
+     */
+    @IntDef({TITLE_ELLIPSIS, SUBTITLE_ELLIPSIS})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TitleGravity {
+    public @interface EllipsisMode {
     }
 
-    /*** 完全居中 保持TitleView和左右屏幕边距离相等，文字居中 */
-    public static final int CENTER = 0;
-    /*** 填充剩余空间 默认居左*/
-    public static final int LEFT = 1;
+    public static final int TITLE_ELLIPSIS = 1;//缩略主标题
+    public static final int SUBTITLE_ELLIPSIS = 0;//缩略副标题
 
+//    /*** 完全居中 保持TitleView和左右屏幕边距离相等，文字居中 */
+//    public static final int TITLE_CENTER = 0;
+//    /*** 填充剩余空间 默认居左*/
+//    public static final int TITLE_LEFT = 1;
 
-    private int mTitleMode;//标题显示模式
+    private int mEllipsisMode;//缩略模式
+
+    //    private int mTitleMode;//标题显示模式
     private Context mContext;
     private View mStatusBar;//状态栏
     private View mBackView;//返回按钮
@@ -177,7 +192,7 @@ public class BaseToolbar extends Toolbar {
                     ((Activity) getContext()).onBackPressed();//调用activity的返回键
             }
         });
-        int padding = DisplayUtil.dip2px(mContext, 12);
+        int padding = ScreenUtil.dip2px(mContext, 12);
         mBackView.setPadding(padding / 3, 0, padding, 0);
 
 
@@ -216,7 +231,7 @@ public class BaseToolbar extends Toolbar {
             }
         });
 
-        int padding = DisplayUtil.dip2px(mContext, 10);
+        int padding = ScreenUtil.dip2px(mContext, 10);
         mBackView.setPadding(0, 0, padding, 0);
 
         addLeftView(mBackView);
@@ -418,49 +433,142 @@ public class BaseToolbar extends Toolbar {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        if (mTitleMode == CENTER) {
-            keepTitleViewCenterForParent();
-        } else {
-            keepTitleViewAlignLeft();
-        }
+//        if (mTitleMode == TITLE_CENTER) {
+        keepTitleViewCenterForParent();
+//        } else {
+//            keepTitleViewAlignLeft();
+//        }
     }
 
+//    /**
+//     * 保持Title居左 仅支持标题缩略模式
+//     */
+//    private void keepTitleViewAlignLeft() {
+//        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTitleTextView.getLayoutParams();
+//        if (mEllipsisMode != SUBTITLE_ELLIPSIS
+//                && params.getRules()[RelativeLayout.RIGHT_OF] == R.id.mLayoutLeft &&
+//                params.getRules()[RelativeLayout.LEFT_OF] == R.id.mLayoutRight) return;//相等就不再设置
+//
+//        mTitleTextView.setVisibility(VISIBLE);
+//
+//        final RelativeLayout.LayoutParams subLeftParams = new RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);//创建新的params
+//        subLeftParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//
+//
+//        final RelativeLayout.LayoutParams subRightParams = new RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);//创建新的params
+//        subRightParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//
+//        params = new RelativeLayout.LayoutParams(
+//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+//        params.addRule(RelativeLayout.RIGHT_OF, R.id.mLayoutLeft);
+//        params.addRule(RelativeLayout.LEFT_OF, R.id.mLayoutRight);
+//        final RelativeLayout.LayoutParams finalParams = params;
+//        post(new Runnable() {
+//            @Override
+//            public void run() {
+//                mLayoutLeft.setLayoutParams(subLeftParams);
+//                mLayoutRight.setLayoutParams(subRightParams);
+//                mTitleTextView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+//                mTitleTextView.setLayoutParams(finalParams);
+//            }
+//        });
+//
+//    }
 
     /**
      * 保持TitleView和左右屏幕边距离相等，文字居中
      */
     private void keepTitleViewCenterForParent() {
+        int screenWidth = ScreenUtil.getScreenWidth(getContext());
         int margin = Math.max(mLayoutLeft.getWidth(), mLayoutRight.getWidth());
-        if (margin > DisplayUtil.getScreenWidth(getContext()) / 2) {
-            mTitleTextView.setVisibility(GONE);
-            return;//超出屏幕一半，Title已经没有显示的地方了
-        } else {
+
+        if (mEllipsisMode == SUBTITLE_ELLIPSIS) {
             mTitleTextView.setVisibility(VISIBLE);
+            if (mTitleTextView.getWidth() + margin * 2 > screenWidth
+                    && mLayoutLeft.getWidth() != mLayoutRight.getWidth()) {//超出了屏幕宽度要做缩略
+                //相等就不再设置，避免死循环
+                ellipsisSubTitle();
+            }
+        } else {
+            if (margin > screenWidth / 2f) {
+                mTitleTextView.setVisibility(GONE);
+                return;//超出屏幕一半，Title已经没有显示的地方了
+            } else {
+                mTitleTextView.setVisibility(VISIBLE);
+            }
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTitleTextView.getLayoutParams();
+            if (margin == params.leftMargin && margin == params.rightMargin)
+                return;//相等就不再设置，避免死循环
+            ellipsisTitle(margin);
         }
 
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mTitleTextView.getLayoutParams();
-        if (margin == params.leftMargin && margin == params.rightMargin) return;//相等就不再设置，避免死循环
+    }
 
-        params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+
+    /**
+     * 缩略副标题 策略
+     */
+    private void ellipsisSubTitle() {
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+        final RelativeLayout.LayoutParams subLeftParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        subLeftParams.addRule(RelativeLayout.LEFT_OF, R.id.mTitleTextView);
+        subLeftParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+
+        final RelativeLayout.LayoutParams subRightParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        subRightParams.addRule(RelativeLayout.RIGHT_OF, R.id.mTitleTextView);
+        subRightParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mTitleTextView.setLayoutParams(params);
+                mTitleTextView.setGravity(Gravity.CENTER);
+                mLayoutLeft.setLayoutParams(subLeftParams);
+                mLayoutRight.setLayoutParams(subRightParams);
+            }
+        });
+
+    }
+
+    /**
+     * 缩略主标题 策略
+     *
+     * @param margin
+     */
+    private void ellipsisTitle(int margin) {
+        final RelativeLayout.LayoutParams subLeftParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        subLeftParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+
+        final RelativeLayout.LayoutParams subRightParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
+        subRightParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+        final RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
         params.leftMargin = margin;
         params.rightMargin = margin;
 
-        mTitleTextView.setLayoutParams(params);
-        mTitleTextView.setGravity(Gravity.CENTER);
-    }
+        post(new Runnable() {
+            @Override
+            public void run() {
+                mTitleTextView.setLayoutParams(params);
+                mTitleTextView.setGravity(Gravity.CENTER);
+                mLayoutLeft.setLayoutParams(subLeftParams);
+                mLayoutRight.setLayoutParams(subRightParams);
 
-    /**
-     * 保持Title居左
-     */
-    private void keepTitleViewAlignLeft() {
-        mTitleTextView.setVisibility(VISIBLE);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);//创建新的params
-        params.addRule(RelativeLayout.RIGHT_OF, R.id.mLayoutLeft);
-        params.addRule(RelativeLayout.LEFT_OF, R.id.mLayoutRight);
-        mTitleTextView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-        mTitleTextView.setLayoutParams(params);
+            }
+        });
+
     }
 
 
@@ -479,25 +587,39 @@ public class BaseToolbar extends Toolbar {
         setTitle(getContext().getText(resId));
     }
 
+//    /**
+//     * 设置标题显示模式 居中还是靠左 默认居中 {@link TitleGravity}
+//     *
+//     * @param titleMode
+//     */
+//    public void setTitleMode(@TitleGravity int titleMode) {
+//        mTitleMode = titleMode;
+//        requestLayout();
+//    }
+//
+//
+//    /**
+//     * 获取当前标题显示模式 {@link TitleGravity}
+//     *
+//     * @return
+//     */
+//    public int getTitleMode() {
+//        return mTitleMode;
+//    }
+
 
     /**
-     * 设置标题显示模式 居中还是靠左 {@link TitleGravity}
+     * 设置缩略模式 是副标题缩略 还是主标题缩略(注意 缩略主标题可能会导致标题不显示，慎用)  默认副标题缩略{@link EllipsisMode}
      *
-     * @param titleMode
+     * @param ellipsisMode
      */
-    public void setTitleMode(@TitleGravity int titleMode) {
-        mTitleMode = titleMode;
+    public void setEllipsisMode(@EllipsisMode int ellipsisMode) {
+        mEllipsisMode = ellipsisMode;
         requestLayout();
     }
 
-
-    /**
-     * 获取当前标题显示模式 {@link TitleGravity}
-     *
-     * @return
-     */
-    public int getTitleMode() {
-        return mTitleMode;
+    public int getEllipsisMode() {
+        return mEllipsisMode;
     }
 
     /**
@@ -916,7 +1038,7 @@ public class BaseToolbar extends Toolbar {
         textMenu.setTextColor(textColorId);
         textMenu.setTextSize(textSize);
         textMenu.setGravity(Gravity.CENTER);
-        int padding = DisplayUtil.dip2px(context, 5);
+        int padding = ScreenUtil.dip2px(context, 5);
         textMenu.setPadding(padding, 0, padding, 0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
@@ -941,7 +1063,7 @@ public class BaseToolbar extends Toolbar {
      */
     public static ImageView createImageMenu(Context context, @DrawableRes int imageResId, ImageView.ScaleType scaleType, OnClickListener listener) {
         ImageView imageMenu = new ImageView(context);
-        int padding = DisplayUtil.dip2px(context, 5);
+        int padding = ScreenUtil.dip2px(context, 5);
         imageMenu.setPadding(padding, 0, padding, 0);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
         params.gravity = Gravity.CENTER;
@@ -977,7 +1099,7 @@ public class BaseToolbar extends Toolbar {
             backLayout.addView(tv);
         }
 
-        int padding = DisplayUtil.dip2px(context, 5);
+        int padding = ScreenUtil.dip2px(context, 5);
         backLayout.setPadding(padding, 0, padding, 0);
         backLayout.setGravity(Gravity.CENTER);
         backLayout.setOnClickListener(listener);

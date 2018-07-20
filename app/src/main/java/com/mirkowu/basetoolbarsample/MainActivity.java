@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mToolbar.setTitle("我是标题");
         mToolbar.setTitleTextColor(Color.WHITE);
         mToolbar.setBottomDivider(getColorId(R.color.gray), 16);//此处高度单位为px
-        mToolbar.setEllipsisMode(BaseToolbar.SUBTITLE_ELLIPSIS);//默认
+        mToolbar.setEllipsisMode(BaseToolbar.SUBTITLE_ELLIPSIS);//默认副标题缩略
         //统一设置副文本的颜色 添加文本时不设置是默认都是这个颜色，需定制时，可调用带文本的颜色的方法
         mToolbar.setSubTextColor(Color.GRAY);
 

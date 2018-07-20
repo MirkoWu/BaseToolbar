@@ -1,7 +1,7 @@
 # Use
 
 ```
-    implementation 'com.mirkowu:BaseToolbar:0.0.5'
+    implementation 'com.mirkowu:BaseToolbar:0.0.6'
 ```
 
 [博客文档](https://juejin.im/post/5abcfe1f6fb9a028c523459d)
@@ -27,7 +27,7 @@
 ```java
     //代码设置
     mToolbar.setTitle("我是标题BaseToolbar");//设置标题
-    mToolbar.setTitleMode(BaseToolbar.CENTER/BaseToolbar.LEFT);//设置标题模式，完全居中/居左
+    mToolbar.setEllipsisMode(BaseToolbar.SUBTITLE_ELLIPSIS);//默认副标题缩略
     mToolbar.setBackButton(R.mipmap.back);//这里简化设置返回键，点击调用onBackPress()
     mToolbar.setBackButton(R.mipmap.back,"返回");//支持图片 和 文字一起显示
     mToolbar.hideBackButton();//需要的时候还可以隐藏
