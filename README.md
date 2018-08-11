@@ -1,7 +1,7 @@
 # Use
 
 ```
-    implementation 'com.mirkowu:BaseToolbar:0.0.6'
+    implementation 'com.mirkowu:BaseToolbar:0.0.7'
 ```
 
 [博客文档](https://juejin.im/post/5abcfe1f6fb9a028c523459d)
@@ -81,6 +81,9 @@
 ### 截图
 ![](image/title.jpg)     
 ![](image/main.png)                 
+
+### Log
+    *2018-8-11 更新获取状态栏高度方法，此时会得到系统原始的状态栏高度，以前可能会获取到屏幕适配后的高度。
 
 # proguard-rules
 ```java

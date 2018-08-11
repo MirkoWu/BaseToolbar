@@ -35,7 +35,7 @@ publish {
     userOrg = 'mirkowu'
     groupId = 'com.mirkowu'
     artifactId = 'BaseToolbar'
-    publishVersion = '0.0.6'
+    publishVersion = '0.0.7'
     desc = ' common and easy Toolbar '
     website = "https://github.com/mirkowu/BaseToolbar"
 }

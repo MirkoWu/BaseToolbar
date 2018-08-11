@@ -2,6 +2,7 @@ package com.mirkowu.basetoolbar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.ColorInt;
@@ -117,10 +118,11 @@ public class BaseToolbar extends Toolbar {
      * @return 状态栏高度
      */
     public int getStatusBarHeight() {
+        Resources resources = Resources.getSystem();
         int result = 0; //获取状态栏高度的资源id
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int resourceId = resources.getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            result = getResources().getDimensionPixelSize(resourceId);
+            result = resources.getDimensionPixelSize(resourceId);
         }
         return result;
     }
